@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { exec } from "child_process";
+import { exec, ChildProcess } from "child_process";
 import OutputChannel from "./output-channel";
 import { isCmdShell, getClickableLinksInMsg } from "./utils";
 import {
@@ -19,8 +19,10 @@ interface IProcessHandlers {
 
 class CommandRunner {
   public isRunProcess: boolean = false;
+  private cp: ChildProcess | null = null;
 
-  public constructor(private outputChannel: OutputChannel) {}
+  public constructor(private outputChannel: OutputChannel) {
+  }
 
   private resolveProcessSuccess(msg: string): StatusType {
     this.outputChannel.showMessage(getClickableLinksInMsg(msg));
@@ -37,7 +39,10 @@ class CommandRunner {
     execOptions: Nullable<IExecOptions>
   ): Promise<StatusType> {
     return new Promise((resolve) => {
-      exec(cmdVal, execOptions, (_, stdout, stderr) => {
+      if (this.cp != null) {
+        this.cp.kill()
+      }
+      this.cp = exec(cmdVal, execOptions, (_, stdout, stderr) => {
         const statusType: StatusType =
           stderr !== ""
             ? this.resolveProcessError(String(stderr))
