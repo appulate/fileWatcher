@@ -38,9 +38,13 @@ class CommandRunner {
     cmdVal: string,
     execOptions: Nullable<IExecOptions>
   ): Promise<StatusType> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (this.cp != null) {
-        this.cp.kill()
+        let killed = this.cp.kill()
+        if (!killed) {
+          console.error("previouse is not killed")
+          reject(StatusType.Error)
+        }
       }
       this.cp = exec(cmdVal, execOptions, (_, stdout, stderr) => {
         const statusType: StatusType =
