@@ -42,15 +42,16 @@ class CommandRunner {
       if (this.cp != null) {
         let killed = this.cp.kill()
         if (!killed) {
-          console.error("previouse is not killed")
-          reject(StatusType.Error)
+          let statusType = this.resolveProcessError("previouse is not killed")
+          reject(statusType)
+          return
         }
       }
       this.cp = exec(cmdVal, execOptions, (_, stdout, stderr) => {
-        const statusType: StatusType =
+        let statusType: StatusType =
           stderr !== ""
-            ? this.resolveProcessError(String(stderr))
-            : this.resolveProcessSuccess(String(stdout));
+            ? this.resolveProcessError(`stdout:${stdout}\nstderr${stderr}`)
+            : this.resolveProcessSuccess(`stdout:${stdout}\nstderr${stderr}`);
 
         resolve(statusType);
       });
