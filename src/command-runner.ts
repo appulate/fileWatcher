@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { exec } from "child_process";
+import { exec, ChildProcess } from "child_process";
 import OutputChannel from "./output-channel";
 import { isCmdShell, getClickableLinksInMsg } from "./utils";
 import {
@@ -19,8 +19,10 @@ interface IProcessHandlers {
 
 class CommandRunner {
   public isRunProcess: boolean = false;
+  private cp: ChildProcess | null = null;
 
-  public constructor(private outputChannel: OutputChannel) {}
+  public constructor(private outputChannel: OutputChannel) {
+  }
 
   private resolveProcessSuccess(msg: string): StatusType {
     this.outputChannel.showMessage(getClickableLinksInMsg(msg));
@@ -36,12 +38,20 @@ class CommandRunner {
     cmdVal: string,
     execOptions: Nullable<IExecOptions>
   ): Promise<StatusType> {
-    return new Promise((resolve) => {
-      exec(cmdVal, execOptions, (_, stdout, stderr) => {
-        const statusType: StatusType =
+    return new Promise((resolve, reject) => {
+      if (this.cp != null) {
+        let killed = this.cp.kill()
+        if (!killed) {
+          let statusType = this.resolveProcessError("previouse is not killed")
+          reject(statusType)
+          return
+        }
+      }
+      this.cp = exec(cmdVal, execOptions, (_, stdout, stderr) => {
+        let statusType: StatusType =
           stderr !== ""
-            ? this.resolveProcessError(String(stderr))
-            : this.resolveProcessSuccess(String(stdout));
+            ? this.resolveProcessError(`stdout:${stdout}\nstderr${stderr}`)
+            : this.resolveProcessSuccess(`stdout:${stdout}\nstderr${stderr}`);
 
         resolve(statusType);
       });
