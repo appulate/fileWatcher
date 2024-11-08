@@ -4,13 +4,13 @@ import ConfigController from "./config-controller";
 import OutputChannel from "./output-channel";
 import StatusBar from "./status-bar";
 import {
-  IEventConfig,
-  StatusType,
-  PreparedCommand,
-  PreparedConfig,
-  Nullable,
-  IPackage,
-  WorkspaceConfig,
+    IEventConfig,
+    IPackage,
+    Nullable,
+    PreparedCommand,
+    PreparedConfig,
+    StatusType,
+    WorkspaceConfig,
 } from "./types";
 
 class FileWatcher {

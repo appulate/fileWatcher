@@ -1,5 +1,5 @@
 {
-	"name": "filewatcher",
+	"name": "filewatcher-windows",
 	"displayName": "File Watcher",
 	"description": "Watch file or folder changes (deletions, creations, renaming), and run matched command scripts.",
 	"icon": "media/lightning.png",
@@ -9,7 +9,7 @@
 	},
 	"publisher": "appulate",
 	"license": "MIT",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/appulate/vscode-file-watcher.git"
